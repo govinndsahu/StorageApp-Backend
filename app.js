@@ -21,7 +21,7 @@ const port = 4000;
 
 app.use(
   cors({
-    origin: "*",
+    origin: process.env.CLIENT_URL,
     preflightContinue: true,
     credentials: true,
     methods: "*",
