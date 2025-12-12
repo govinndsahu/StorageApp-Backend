@@ -19,24 +19,7 @@ await connectDB();
 const app = express();
 const port = 4000;
 
-app.use((req, res, next) => {
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://storage-app-frontend.vercel.app"
-  );
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  cors({
-    origin: [
-      "http://192.168.1.10:5173",
-      "http://localhost:5173",
-      "http://localhost:5500",
-      process.env.CLIENT_URL,
-    ],
-    credentials: true,
-  });
-
-  next();
-});
+app.use(cors());
 
 app.use(helmet());
 
