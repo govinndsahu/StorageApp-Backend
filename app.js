@@ -20,6 +20,11 @@ const app = express();
 const port = 4000;
 
 app.use((req, res, next) => {
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://storage-app-frontend.vercel.app"
+  );
+
   cors({
     origin: [
       "http://192.168.1.10:5173",
@@ -29,11 +34,6 @@ app.use((req, res, next) => {
     ],
     credentials: true,
   });
-
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://storage-app-frontend.vercel.app"
-  );
 
   next();
 });
