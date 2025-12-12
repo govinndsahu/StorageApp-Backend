@@ -24,7 +24,7 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Origin",
     "https://storage-app-frontend.vercel.app"
   );
-
+  res.setHeader("Access-Control-Allow-Credentials", "true");
   cors({
     origin: [
       "http://192.168.1.10:5173",
