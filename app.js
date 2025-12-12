@@ -21,6 +21,8 @@ const port = 4000;
 
 app.use(cors());
 
+app.options("*", cors());
+
 app.use(helmet());
 
 app.use(cookieParser(process.env.COOKIE_PARSER_SESSION_KEY));
