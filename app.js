@@ -21,10 +21,13 @@ const port = 4000;
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
-    preflightContinue: true,
+    origin: process.env.CLIENT_URL || "https://storage-app-frontend.vercel.app",
     credentials: true,
-    methods: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+    exposedHeaders: ["Set-Cookie"],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   })
 );
 
