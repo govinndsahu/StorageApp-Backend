@@ -21,7 +21,7 @@ const port = 4000;
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "https://storageapp.govindsahu.me/",
+    origin: process.env.CLIENT_URL || "https://storageapp.govindsahu.me",
     credentials: true,
   })
 );
