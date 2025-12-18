@@ -19,9 +19,17 @@ await connectDB();
 const app = express();
 const port = 4000;
 
+const whitelist = [process.env.CLIENT_URL, "https://storage.govindsahu.me"];
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "https://storageapp.govindsahu.me",
+    origin: function (origin, callback) {
+      if (whitelist.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
