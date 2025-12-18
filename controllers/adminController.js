@@ -120,7 +120,11 @@ export const hardDeleteUserByAdmin = async (req, res, next) => {
 
     files.forEach(
       async (file) =>
-        await rm(`${import.meta.dirname}/../storage/${file._id.toString()}${file.extention}`)
+        await rm(
+          `${import.meta.dirname}/../storage/${file._id.toString()}${
+            file.extention
+          }`
+        )
     );
 
     await session.commitTransaction();
@@ -169,7 +173,7 @@ export const changeUserRole = async (req, res, next) => {
         error: "You can not set Owner role!",
       });
 
-    user.role = purify.sanitize(newRole);
+    user.role = newRole;
     await user.save();
 
     return res.status(201).end();

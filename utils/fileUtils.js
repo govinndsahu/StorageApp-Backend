@@ -91,8 +91,9 @@ export const removeFile = async (res, id, file) => {
     `${import.meta.dirname}/../storage/${id}${file.extention}`
   );
 
-  await rm(filePath, { recursive: true });
   await File.deleteOne({ _id: id });
+  
+  await rm(filePath, { recursive: true });
 
   return res.status(200).json({ message: "File deleted successfully." });
 };

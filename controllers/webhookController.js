@@ -25,17 +25,14 @@ export const PLANS = {
 
 export const handleRazorpayWebhook = async (req, res) => {
   const signature = req.headers["x-razorpay-signature"];
-  // console.log(signature);
-  // return res.end("End");
+  console.log(signature);
   const isSignatureValid = Razorpay.validateWebhookSignature(
     JSON.stringify(req.body),
     signature,
     process.env.RAZORPAY_WEBHOOK_SECRET
   );
+  console.log(isSignatureValid);
   if (isSignatureValid) {
-    console.log("Signature verified");
-
-    console.log(req.body);
     if (req.body.event === "subscription.activated") {
       const rzpSubscription = req.body.payload.subscription.entity;
       const planId = rzpSubscription.plan_id;
@@ -48,7 +45,6 @@ export const handleRazorpayWebhook = async (req, res) => {
       const user = await User.findById(subscription.userId);
       user.maxStorageInBytes = storageQuotaBytes;
       await user.save();
-      console.log("subscription activated");
     }
   } else {
     console.log("Signature not verified");
