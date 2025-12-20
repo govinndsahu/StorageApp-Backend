@@ -74,7 +74,7 @@ export const handleGitHubWebhook = async (req, res, next) => {
     const repositoryName = req.body.repository.name;
 
     const bashFile =
-      repositoryName === "Storage-Frontend"
+      repositoryName === "StorageApp-Frontend"
         ? "deploy-frontend-ec2.sh"
         : "deploy-backend.sh";
 
