@@ -28,7 +28,7 @@ jobs:
           ssh "${SSH_USER}@${SSH_HOST}" 'bash -s' << 'EOF'
             set -e
 
-            cd /home/ubuntu/StroageApp-Backend
+            cd /home/ubuntu/StorageApp-Backend
             git pull
 
             echo "Installing backend dependencies (npm ci)..."
