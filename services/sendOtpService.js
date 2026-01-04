@@ -26,5 +26,5 @@ export const sendOtpService = async (email) => {
     html,
   });
 
-  return { success: true, message: "OTP sent successfully" };
+  return { success: true, message: "OTP sent successfully." };
 };
