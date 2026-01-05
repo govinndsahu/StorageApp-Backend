@@ -49,7 +49,7 @@ app.use(express.static("storage"));
 
 app.get("/", (req, res) => {
   return res.json({
-    message: "Hello StorageApp!!",
+    message: "Hello StorageApp",
   });
 });
 
