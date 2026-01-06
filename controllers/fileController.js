@@ -17,7 +17,7 @@ export const createFile = async (req, res, next) => {
   const filesize = +req.headers.filesize;
   const parentDirId = req.params.parentDirId || req.user.rootDirId.toString();
 
-  if (filesize > 50 * 1024 * 1024) {
+  if (filesize > 50 * 1024 * 1024 * 1024) {
     console.log("File is too large!");
     return req.destroy();
   }
