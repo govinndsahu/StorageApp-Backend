@@ -18,7 +18,7 @@ import helmet from "helmet";
 await connectDB();
 
 const app = express();
-const port = 4000;
+const port = 4001;
 
 const whitelist = [
   process.env.CLIENT_URL,
@@ -49,7 +49,7 @@ app.use(express.static("storage"));
 
 app.get("/", (req, res) => {
   return res.json({
-    message: "Hello StorageApp",
+    message: "Hello StorageApp Test Mode!",
   });
 });
 
