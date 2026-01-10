@@ -18,7 +18,7 @@ import helmet from "helmet";
 await connectDB();
 
 const app = express();
-const port = 4001;
+const port = process.env.PORT;
 
 const whitelist = [
   process.env.CLIENT_URL,
