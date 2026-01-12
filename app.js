@@ -47,10 +47,8 @@ app.use(express.json());
 
 app.use(express.static("storage"));
 
-app.get("/", (req, res) => {
-  return res.json({
-    message: "Hello StorageApp!!",
-  });
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "UP", timestamp: new Date() });
 });
 
 app.use("/webhooks", webhookRoutes);
