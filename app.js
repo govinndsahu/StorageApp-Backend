@@ -48,7 +48,7 @@ app.use(express.json());
 app.use(express.static("storage"));
 
 app.get("/health", (req, res) => {
-  res.status(200).json({ status: "UP", timestamp: new Date(), message: "OK!~" });
+  res.status(200).json({ status: "UP", timestamp: new Date(), message: "OK!" });
 });
 
 app.use("/webhooks", webhookRoutes);
