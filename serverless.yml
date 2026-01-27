@@ -1,5 +1,18 @@
 # "service" is the name of this project. This will also be added to your AWS resource names.
-service: serverless-framework-storage-app
+service: storageAppBackend
+
+plugins:
+  - serverless-domain-manager
+
+custom:
+  customDomain:
+    domainName: api.govindsahu.me # Change this to your domain
+    stage: ${sls:stage}
+    basePath: "" # Path prefix (empty for root)
+    certificateName: "api.govindsahu.me" # The name/wildcard of your ACM cert
+    createRoute53Record: false # Set to false if you don't use Route53
+    endpointType: "regional" # Required for httpApi
+    apiType: http
 
 provider:
   name: aws
