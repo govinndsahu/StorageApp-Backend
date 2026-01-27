@@ -5,7 +5,7 @@ import {
   getDirectoryContents,
   validateDirectory,
 } from "../utils/directoryUtils.js";
-import { fetchFile, fileValidate } from "../utils/fileUtils.js";
+import {  fileValidate, readfile } from "../utils/fileUtils.js";
 
 export const getDirectoryData = async (req, res, next) => {
   const { id } = req.params;
@@ -36,14 +36,14 @@ export const makeDirectoryPublic = async (req, res, next) => {
       {
         _id: { $in: files.map(({ _id }) => _id) },
       },
-      { isPublic: true }
+      { isPublic: true },
     );
 
     await Directory.updateMany(
       {
         _id: { $in: [...directories.map(({ _id }) => _id), id] },
       },
-      { isPublic: true }
+      { isPublic: true },
     );
 
     return res.status(201).json({
@@ -68,14 +68,14 @@ export const makeDirectoryUnPublic = async (req, res, next) => {
       {
         _id: { $in: files.map(({ _id }) => _id) },
       },
-      { isPublic: false }
+      { isPublic: false },
     );
 
     await Directory.updateMany(
       {
         _id: { $in: [...directories.map(({ _id }) => _id), id] },
       },
-      { isPublic: false }
+      { isPublic: false },
     );
 
     return res.status(201).json({
@@ -98,8 +98,9 @@ export const readPublicFile = async (req, res, next) => {
         error: "Access denied. This is not a public file!",
       });
 
-    const response = await fetchFile(req, res, id, file);
-    return response;
+    const { url } = await readfile(req, id, file);
+
+    return res.redirect(url);
   } catch (error) {
     next(error);
   }

@@ -1,0 +1,33 @@
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: serverless-framework-storage-app
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-south-1
+  # Uncomment to easily set up a custom domain. Read the docs for more details:
+  # https://www.serverless.com/framework/docs/providers/aws/guide/domains
+  # domain: api.example.com
+  environment:
+    MONGODB_CONNECTION_URL: ${env:MONGODB_CONNECTION_URL}
+    REDIS_CONNECTION_URL: ${env:REDIS_CONNECTION_URL}
+    CLIENT_URL: ${env:CLIENT_URL}
+    REDIS_PASSWORD: ${env:REDIS_PASSWORD}
+    GOOGLE_AUTH_CLIENT_ID: ${env:GOOGLE_AUTH_CLIENT_ID}
+    EMAIL_RESEND_KEY: ${env:EMAIL_RESEND_KEY}
+    COOKIE_PARSER_SESSION_KEY: ${env:COOKIE_PARSER_SESSION_KEY}
+    RAZORPAY_KEY_ID: ${env:RAZORPAY_KEY_ID}
+    RAZORPAY_KEY_SECRET: ${env:RAZORPAY_KEY_SECRET}
+    RAZORPAY_WEBHOOK_SECRET: ${env:RAZORPAY_WEBHOOK_SECRET}
+
+functions:
+  api:
+    handler: index.handler
+    events:
+      - httpApi: "*"
+
+package:
+  patterns:
+    - "!.env"
+    - "!.git/**"
+    - "!README.md"

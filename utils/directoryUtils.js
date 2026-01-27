@@ -1,9 +1,9 @@
-import { rm } from "fs/promises";
 import Directory from "../models/directoryModel.js";
 import File from "../models/fileModel.js";
 import { purify } from "./helpers.js";
 import z from "zod";
 import { Types } from "mongoose";
+import { deleteObjects } from "./awsUtils.js";
 
 export const getDirData = async (dirData, res) => {
   if (!dirData)
@@ -71,7 +71,7 @@ export const renameDir = async (req, res, id) => {
 
   await Directory.updateOne(
     { _id: id },
-    { $set: { name: newName || "New Folder" } }
+    { $set: { name: newName || "New Folder" } },
   );
   return res.status(201).json({ message: "Directory renamed successfully" });
 };
@@ -79,9 +79,12 @@ export const renameDir = async (req, res, id) => {
 export const deleteDir = async (res, id) => {
   const { files, directories } = await getDirectoryContents(id);
 
-  for (const { _id, extention } of files) {
-    await rm(`${import.meta.dirname}/../storage/${_id.toString()}${extention}`);
-  }
+  if (files.length)
+    await deleteObjects({
+      Objects: files.map((file) => ({
+        Key: `${file._id}${file.extention}`,
+      })),
+    });
 
   await File.deleteMany({
     _id: { $in: files.map(({ _id }) => _id) },

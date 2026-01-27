@@ -1,38 +1,49 @@
 import { validateDirectory } from "../utils/directoryUtils.js";
 import {
-  fetchFile,
   fileValidate,
   removeFile,
   renamefile,
   uploadFile,
+  readfile,
 } from "../utils/fileUtils.js";
+import { fileSchema } from "../validator/fileSchema.js";
 
 export const readUserFile = async (req, res, next) => {
   const { id } = req.params;
   try {
     const { file } = await fileValidate(res, id);
-    const response = await fetchFile(req, res, id, file);
-    return response;
+
+    const { url } = await readfile(req, id, file);
+
+    return res.redirect(url);
   } catch (error) {
     next(error);
   }
 };
 
-export const uploadUserFile = async (req, res, next) => {
-  const filename = req.headers.filename || "untitled";
+export const uploadInitiateUserFile = async (req, res, next) => {
   const parentDirId = req.params.parentDirId;
-  const filesize = +req.headers.filesize;
+
+  const { success, data, error } = fileSchema.safeParse(req.body);
+
+  if (!success)
+    return res.status(400).json({
+      error: z.flattenError(error).fieldErrors,
+    });
+
+  const { filename, filesize, filetype } = data;
+
   try {
     const { directory: parentDir } = await validateDirectory(res, parentDirId);
 
     const response = await uploadFile(
-      req,
       res,
       parentDir.userId,
       filename,
       filesize,
+      filetype,
       parentDirId,
-      parentDir
+      parentDir,
     );
 
     return response;

@@ -15,8 +15,6 @@ import { connectDB } from "./config/db.js";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 
-await connectDB();
-
 const app = express();
 const port = process.env.PORT;
 
@@ -36,7 +34,7 @@ app.use(
       }
     },
     credentials: true,
-  })
+  }),
 );
 
 app.use(helmet());
@@ -48,7 +46,9 @@ app.use(express.json());
 app.use(express.static("storage"));
 
 app.get("/health", (req, res) => {
-  res.status(200).json({ status: "UP", timestamp: new Date(), message: "OK" });
+  return res
+    .status(200)
+    .json({ status: "UP", timestamp: new Date(), message: "OK" });
 });
 
 app.use("/webhooks", webhookRoutes);
@@ -71,14 +71,14 @@ app.use("/", CheckAuth, subscriptionRoutes);
 
 app.use((err, req, res, next) => {
   console.log(err);
-  // console.log(
-  //   err.errInfo.details.schemaRulesNotSatisfied[0].propertiesNotSatisfied[0].details
-  // );
   return res.status(err.status || 500).json({
     error: "Something went wrong",
   });
 });
 
-app.listen(port, () => {
-  console.log("Server is running on port 4000");
-});
+if (process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  return app.listen(port, () => {
+    console.log("Server is running 4000!");
+  });
+}
+export default app;

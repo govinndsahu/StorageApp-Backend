@@ -1,6 +1,6 @@
 import {
-  fetchFile,
   fileValidate,
+  readfile,
   removeFile,
   renamefile,
   uploadFile,
@@ -11,11 +11,21 @@ import {
 } from "../utils/directoryUtils.js";
 import User from "../models/userModel.js";
 import Directory from "../models/directoryModel.js";
+import { fileSchema } from "../validator/fileSchema.js";
+import { getObjectData } from "../utils/awsUtils.js";
+import File from "../models/fileModel.js";
 
-export const createFile = async (req, res, next) => {
-  const filename = req.headers.filename || "untitled";
-  const filesize = +req.headers.filesize;
+export const initiateUpload = async (req, res, next) => {
   const parentDirId = req.params.parentDirId || req.user.rootDirId.toString();
+
+  const { success, data, error } = fileSchema.safeParse(req.body);
+
+  if (!success)
+    return res.status(400).json({
+      error: z.flattenError(error).fieldErrors,
+    });
+
+  const { filename, filesize, filetype } = data;
 
   if (filesize > 50 * 1024 * 1024 * 1024) {
     console.log("File is too large!");
@@ -28,7 +38,7 @@ export const createFile = async (req, res, next) => {
       .lean();
 
     const { size: usedStorageInBytes } = await Directory.findById(
-      req.user.rootDirId
+      req.user.rootDirId,
     )
       .select("size -_id -userId")
       .lean();
@@ -46,18 +56,49 @@ export const createFile = async (req, res, next) => {
       return res.status(401).json({ error: "Unauthorized operation!" });
 
     const response = await uploadFile(
-      req,
       res,
       req.user._id,
       filename,
       filesize,
+      filetype,
       parentDirId,
-      parentDir
+      parentDir,
     );
 
     await updateDirectoriesSize(parentDirId, filesize);
 
     return response;
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const uploadComplete = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const file = await File.findOne({ _id: id, isUploading: true }).select(
+      "size extention parentDirId",
+    );
+
+    if (!file)
+      return res.status(404).json({ error: "File not found in our records" });
+
+    const { response } = await getObjectData({ Key: `${id}${file.extention}` });
+
+    if (response.ContentLength !== file.size) {
+      await file.deleteOne();
+      return res.status(400).json({ error: "File size does not match." });
+    }
+
+    file.isUploading = false;
+    await file.save();
+
+    await updateDirectoriesSize(file.parentDirId, file.size);
+
+    return res.status(200).json({
+      success: true,
+      message: "File uploaded successfully!",
+    });
   } catch (error) {
     next(error);
   }
@@ -71,8 +112,9 @@ export const readFile = async (req, res, next) => {
     if (file.userId.toString() !== req.user._id.toString())
       return res.status(401).json({ error: "Unauthorized access!" });
 
-    const response = await fetchFile(req, res, id, file);
-    return response;
+    const { url } = await readfile(req, id, file);
+
+    return res.redirect(url);
   } catch (err) {
     next(err);
   }
