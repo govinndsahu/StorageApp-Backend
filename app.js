@@ -43,12 +43,10 @@ app.use(cookieParser(process.env.COOKIE_PARSER_SESSION_KEY));
 
 app.use(express.json());
 
-app.use(express.static("storage"));
-
 app.get("/health", (req, res) => {
   return res
     .status(200)
-    .json({ status: "UP", timestamp: new Date(), message: "OK!" });
+    .json({ status: "UP", timestamp: new Date(), message: "OK!!" });
 });
 
 app.use("/webhooks", webhookRoutes);
@@ -79,7 +77,7 @@ app.use((err, req, res, next) => {
 if (!process.env.AWS_LAMBDA_FUNCTION_VERSION) {
   await connectDB();
   app.listen(port, () => {
-    console.log("Server is running 4000!");
+    console.log("Server is running 4000");
   });
 }
 

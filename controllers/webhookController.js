@@ -5,22 +5,22 @@ import { spawn } from "child_process";
 import crypto from "crypto";
 
 export const PLANS = {
-  plan_RpkRbZ15VUKwVv: {
+  plan_S8wfYi15eCR8zL: {
     storageQuotaBytes: 2 * 1024 ** 3,
   },
-  plan_RpkT5YPxO8Xepy: {
+  plan_S8wpuHAaQpzWi2: {
     storageQuotaBytes: 2 * 1024 ** 3,
   },
-  plan_RpkUZZBhfeRzIu: {
+  plan_S8wkQjs5WgcfEW: {
     storageQuotaBytes: 5 * 1024 ** 3,
   },
-  plan_RpkVvNRxSrioHR: {
+  plan_S8wsxGtrzqGL3d: {
     storageQuotaBytes: 5 * 1024 ** 3,
   },
-  plan_RpkWmbpbzTwJ5a: {
+  plan_S8wls3JKqs516M: {
     storageQuotaBytes: 10 * 1024 ** 3,
   },
-  plan_RpkXniI9bBu7dG: {
+  plan_S8wtzbeNBj5Q17: {
     storageQuotaBytes: 10 * 1024 ** 3,
   },
 };
@@ -31,7 +31,7 @@ export const handleRazorpayWebhook = async (req, res) => {
   const isSignatureValid = Razorpay.validateWebhookSignature(
     JSON.stringify(req.body),
     signature,
-    process.env.RAZORPAY_WEBHOOK_SECRET
+    process.env.RAZORPAY_WEBHOOK_SECRET,
   );
   console.log(isSignatureValid);
   if (isSignatureValid) {
