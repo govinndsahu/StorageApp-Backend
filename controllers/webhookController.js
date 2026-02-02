@@ -3,6 +3,7 @@ import Subscription from "../models/subscriptionModel.js";
 import User from "../models/userModel.js";
 import { spawn } from "child_process";
 import crypto from "crypto";
+import rzpInstance from "../config/razorpay.js";
 
 export const PLANS = {
   plan_S8wfYi15eCR8zL: {
@@ -27,26 +28,73 @@ export const PLANS = {
 
 export const handleRazorpayWebhook = async (req, res) => {
   const signature = req.headers["x-razorpay-signature"];
-  console.log(signature);
   const isSignatureValid = Razorpay.validateWebhookSignature(
     JSON.stringify(req.body),
     signature,
     process.env.RAZORPAY_WEBHOOK_SECRET,
   );
-  console.log(isSignatureValid);
+
   if (isSignatureValid) {
-    if (req.body.event === "subscription.activated") {
+    if (
+      req.body.event === "subscription.activated" ||
+      req.body.event === "subscription.resumed"
+    ) {
       const rzpSubscription = req.body.payload.subscription.entity;
       const planId = rzpSubscription.plan_id;
-      const subscription = await Subscription.findOne({
+      const subscription = await Subscription.findOneAndUpdate(
+        {
+          razorpaySubscriptionId: rzpSubscription.id,
+        },
+        { status: rzpSubscription.status },
+      );
+
+      const storageQuotaBytes = PLANS[planId].storageQuotaBytes;
+
+      await User.findByIdAndUpdate(subscription.userId, {
+        maxStorageInBytes: storageQuotaBytes,
+      });
+
+      const subscriptions = await Subscription.find({
+        userId: subscription.userId,
+      });
+
+      if (subscriptions.length > 0) {
+        const oldSubscription = subscriptions.find(
+          (s) => s.razorpaySubscriptionId !== rzpSubscription.id,
+        );
+
+        await rzpInstance.subscriptions.cancel(
+          oldSubscription.razorpaySubscriptionId,
+          false,
+        );
+
+        await Subscription.findOneAndDelete({
+          razorpaySubscriptionId: oldSubscription.razorpaySubscriptionId,
+        });
+      }
+    } else if (req.body.event === "subscription.paused") {
+      const rzpSubscription = req.body.payload.subscription.entity;
+
+      const subscription = await Subscription.findOneAndUpdate(
+        {
+          razorpaySubscriptionId: rzpSubscription.id,
+        },
+        { status: req.body.event.split(".")[1] },
+      );
+
+      await User.findByIdAndUpdate(subscription.userId, {
+        maxStorageInBytes: 1 * 1024 ** 3,
+      });
+    } else if (req.body.event === "subscription.cancelled") {
+      const rzpSubscription = req.body.payload.subscription.entity;
+
+      const subscription = await Subscription.findOneAndDelete({
         razorpaySubscriptionId: rzpSubscription.id,
       });
-      subscription.status = rzpSubscription.status;
-      await subscription.save();
-      const storageQuotaBytes = PLANS[planId].storageQuotaBytes;
-      const user = await User.findById(subscription.userId);
-      user.maxStorageInBytes = storageQuotaBytes;
-      await user.save();
+
+      await User.findByIdAndUpdate(subscription.userId, {
+        maxStorageInBytes: 1 * 1024 ** 3,
+      });
     }
   } else {
     console.log("Signature not verified");
