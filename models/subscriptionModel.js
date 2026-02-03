@@ -2,6 +2,10 @@ import { model, Schema } from "mongoose";
 
 const subscriptionSchema = new Schema(
   {
+    planName: {
+      type: String,
+      required: true,
+    },
     razorpaySubscriptionId: {
       type: String,
       required: true,
@@ -29,7 +33,7 @@ const subscriptionSchema = new Schema(
     strict: "throw",
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 const Subscription = model("Subscription", subscriptionSchema);

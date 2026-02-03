@@ -3,8 +3,17 @@ import Subscription from "../models/subscriptionModel.js";
 
 export const createSubscription = async (req, res, next) => {
   try {
+    const plan = await rzpInstance.plans.fetch(req.body.planId);
+
+    const planName = plan.item.name.split(" ").includes("Ultimate")
+      ? "ultimate"
+      : plan.item.name.split(" ").includes("2")
+        ? "pro"
+        : "starter";
+
     const existingSubscription = await Subscription.findOne({
       userId: req.user._id,
+      planName,
     }).lean();
 
     if (existingSubscription) {
@@ -31,6 +40,7 @@ export const createSubscription = async (req, res, next) => {
     const subscription = new Subscription({
       razorpaySubscriptionId: newSubscription.id,
       userId: req.user._id,
+      planName,
     });
 
     await subscription.save();

@@ -6,13 +6,19 @@ import crypto from "crypto";
 import rzpInstance from "../config/razorpay.js";
 
 export const PLANS = {
-  plan_S8wfYi15eCR8zL: {
+  // plan_S8wfYi15eCR8zL: {
+  //   storageQuotaBytes: 2 * 1024 ** 3,
+  // },
+  plan_S9nWAqeA9tmsWd: {
     storageQuotaBytes: 2 * 1024 ** 3,
   },
   plan_S8wpuHAaQpzWi2: {
     storageQuotaBytes: 2 * 1024 ** 3,
   },
-  plan_S8wkQjs5WgcfEW: {
+  // plan_S8wkQjs5WgcfEW: {
+  //   storageQuotaBytes: 5 * 1024 ** 3,
+  // },
+  plan_S9npNgRcj2NGAx: {
     storageQuotaBytes: 5 * 1024 ** 3,
   },
   plan_S8wsxGtrzqGL3d: {
