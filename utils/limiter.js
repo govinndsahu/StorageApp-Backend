@@ -14,3 +14,16 @@ export const renameLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+export const razorpayWebhookLimiter = rateLimit({
+  windowMs: 1000 * 60,
+  limit: 5,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+});
+
+export const githubWebhookLimiter = rateLimit({
+  windowMs: 1000 * 60,
+  limit: 10,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+});
