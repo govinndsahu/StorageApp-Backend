@@ -65,8 +65,6 @@ export const initiateUpload = async (req, res, next) => {
       parentDir,
     );
 
-    await updateDirectoriesSize(parentDirId, filesize);
-
     return response;
   } catch (error) {
     next(error);
@@ -129,8 +127,6 @@ export const deleteFile = async (req, res, next) => {
       return res.status(404).json({ error: "Unauthorized operation!" });
 
     const response = await removeFile(res, id, file);
-
-    await updateDirectoriesSize(file.parentDirId, -file.size);
 
     return response;
   } catch (error) {

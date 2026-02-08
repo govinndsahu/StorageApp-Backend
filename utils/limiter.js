@@ -16,7 +16,7 @@ export const renameLimiter = rateLimit({
 
 export const razorpayWebhookLimiter = rateLimit({
   windowMs: 1000 * 60,
-  limit: 5,
+  limit: 10,
   standardHeaders: "draft-8",
   legacyHeaders: false,
 });

@@ -16,13 +16,10 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 
 const app = express();
+
 const port = process.env.PORT;
 
-const whitelist = [
-  process.env.CLIENT_URL,
-  "https://storageapp.govindsahu.me",
-  "http://localhost:5173",
-];
+const whitelist = [process.env.CLIENT_URL, "http://localhost:5173"];
 
 app.use(
   cors({
